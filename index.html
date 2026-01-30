@@ -1,331 +1,337 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>It Compiles On My Machine | Battle-Tested Coding Tips</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-</head>
-<body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="nav-container">
-            <div class="logo">
-                <div class="logo-icon">&lt;/&gt;</div>
-                <span class="logo-text">itcompilesonmymachine</span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#tips">Tips</a></li>
-                <li><a href="#playground">Playground</a></li>
-                <li><a href="#challenges">Challenges</a></li>
-                <li><a href="#about">About</a></li>
-            </ul>
-        </nav>
-    </header>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>It Compiles On My Machine | Battle-Tested Coding Tips</title>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1 class="hero-title">Battle-Tested Coding Tips</h1>
-            <p class="hero-subtitle">From developers in the trenches. Real experience, zero BS.</p>
-            <p class="hero-description">We share the insights that save hours, prevent bugs, and make you better at your craft.</p>
-            <div class="hero-cta">
-                <a href="#playground" class="btn btn-primary">Try Python Playground</a>
-                <a href="#tips" class="btn btn-secondary">Browse Tips</a>
-            </div>
+  <meta name="description" content="Battle-tested coding tips and an interactive Python playground. Real experience, zero BS." />
+  <link rel="canonical" href="https://bitbird9.github.io/ItCompilesOnMyMachine/" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="header">
+    <nav class="nav-container" aria-label="Primary">
+      <a class="logo" href="#top" aria-label="Home">
+        <div class="logo-icon" aria-hidden="true">&lt;/&gt;</div>
+        <span class="logo-text">itcompilesonmymachine</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="navLinks">
+        ☰
+      </button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#tips">Tips</a></li>
+        <li><a href="#playground">Playground</a></li>
+        <li><a href="#challenges">Challenges</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" id="top">
+      <div class="hero-content">
+        <h1 class="hero-title">Battle-Tested Coding Tips</h1>
+        <p class="hero-subtitle">From developers in the trenches. Real experience, zero BS.</p>
+        <p class="hero-description">Insights that save hours, prevent bugs, and make you better at your craft.</p>
+
+        <div class="hero-cta">
+          <a href="#playground" class="btn btn-primary">Try Python Playground</a>
+          <a href="#tips" class="btn btn-secondary">Browse Tips</a>
         </div>
-        <div class="hero-visual">
-            <div class="code-window">
-                <div class="window-header">
-                    <span class="dot red"></span>
-                    <span class="dot yellow"></span>
-                    <span class="dot green"></span>
-                </div>
-                <pre class="code-content"><code><span class="keyword">def</span> <span class="function">debug</span>():
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="code-window">
+          <div class="window-header">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <pre class="code-content"><code><span class="keyword">def</span> <span class="function">debug</span>():
     <span class="keyword">return</span> <span class="string">"it works locally"</span>
 
 <span class="comment"># Famous last words...</span></code></pre>
-            </div>
         </div>
+      </div>
     </section>
 
-    <!-- Python Playground -->
+    <!-- Playground -->
     <section id="playground" class="playground-section">
-        <div class="container">
-            <h2 class="section-title">Interactive Python Playground</h2>
-            <p class="section-subtitle">Test Python code right in your browser. Learn by doing.</p>
-            
-            <div class="playground-container">
-                <div class="editor-panel">
-                    <div class="panel-header">
-                        <span class="panel-title">Code Editor</span>
-                        <button id="runCode" class="btn-run">▶ Run Code</button>
-                    </div>
-                    <textarea id="codeEditor" class="code-editor" spellcheck="false"># Try the dict.get() mutable default gotcha:
-cache = {}
+      <div class="container">
+        <h2 class="section-title">Interactive Python Playground</h2>
+        <p class="section-subtitle">Real Python in your browser (Pyodide). Runs in an isolated worker.</p>
 
-# This looks fine but...
-result1 = cache.get('key', [])
-result1.append('first')
-
-result2 = cache.get('key', [])
-result2.append('second')
-
-print("result1:", result1)
-print("result2:", result2)
-print("Are they the same object?", result1 is result2)</textarea>
-                </div>
-                
-                <div class="output-panel">
-                    <div class="panel-header">
-                        <span class="panel-title">Output</span>
-                        <button id="clearOutput" class="btn-clear">Clear</button>
-                    </div>
-                    <div id="output" class="code-output">
-                        <span class="output-placeholder">Run your code to see output here...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="playground-examples">
-                <h3>Quick Examples:</h3>
-                <div class="example-buttons">
-                    <button class="btn-example" data-example="dictget">Dict.get() Gotcha</button>
-                    <button class="btn-example" data-example="listcomp">List Comprehension</button>
-                    <button class="btn-example" data-example="walrus">Walrus Operator</button>
-                    <button class="btn-example" data-example="contextmgr">Context Manager</button>
-                </div>
-            </div>
+        <div class="status-row" role="status" aria-live="polite">
+          <span id="pyStatus" class="status-pill status-loading">Loading Python…</span>
+          <span class="status-hint">Tip: Ctrl+Enter / Cmd+Enter to run</span>
         </div>
+
+        <div class="playground-container">
+          <div class="editor-panel">
+            <div class="panel-header">
+              <span class="panel-title">Code Editor</span>
+              <div class="panel-actions">
+                <button id="stopCode" class="btn-stop" type="button" disabled>■ Stop</button>
+                <button id="runCode" class="btn-run" type="button">▶ Run</button>
+              </div>
+            </div>
+
+            <textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="Python code editor"></textarea>
+
+            <div class="editor-footer">
+              <label class="inline-control">
+                Timeout
+                <select id="timeoutSelect" aria-label="Execution timeout">
+                  <option value="1500">1.5s</option>
+                  <option value="3000" selected>3s</option>
+                  <option value="5000">5s</option>
+                  <option value="10000">10s</option>
+                </select>
+              </label>
+
+              <label class="inline-control">
+                Output cap
+                <select id="capSelect" aria-label="Output cap">
+                  <option value="8000">8 KB</option>
+                  <option value="16000" selected>16 KB</option>
+                  <option value="32000">32 KB</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="output-panel">
+            <div class="panel-header">
+              <span class="panel-title">Output</span>
+              <div class="panel-actions">
+                <button id="copyOutput" class="btn-clear" type="button">Copy</button>
+                <button id="clearOutput" class="btn-clear" type="button">Clear</button>
+              </div>
+            </div>
+
+            <pre id="output" class="code-output" tabindex="0" aria-label="Program output">
+Run your code to see output here…
+            </pre>
+          </div>
+        </div>
+
+        <div class="playground-examples">
+          <h3>Quick Examples</h3>
+          <div class="example-buttons" role="list">
+            <button class="btn-example" data-example="dictget" type="button">dict.get() Gotcha</button>
+            <button class="btn-example" data-example="mutabledefault" type="button">Mutable Default Args</button>
+            <button class="btn-example" data-example="listcomp" type="button">List Comprehension</button>
+            <button class="btn-example" data-example="walrus" type="button">Walrus Operator</button>
+            <button class="btn-example" data-example="contextmgr" type="button">Context Manager</button>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- Coding Tips Section -->
+    <!-- Tips -->
     <section id="tips" class="tips-section">
-        <div class="container">
-            <h2 class="section-title">Latest Coding Tips</h2>
-            <p class="section-subtitle">Battle-tested insights from real development work</p>
-            
-            <div class="tips-grid">
-                <!-- Tip Card 1 -->
-                <div class="tip-card">
-                    <div class="tip-badge python">Python</div>
-                    <h3 class="tip-title">Dict.get() with Mutable Defaults</h3>
-                    <p class="tip-description">That default [] gets created once and reused. Both variables point to the same list.</p>
-                    <div class="tip-code">
-                        <pre><code><span class="comment"># ❌ Bad - shared reference</span>
-result = cache.get('key', [])
-result.append('item')
+      <div class="container">
+        <h2 class="section-title">Latest Coding Tips</h2>
+        <p class="section-subtitle">Battle-tested insights from real development work</p>
 
-<span class="comment"># ✅ Good - use setdefault</span>
-cache.setdefault('key', []).append('item')</code></pre>
-                    </div>
-                    <div class="tip-footer">
-                        <span class="tip-impact">🎯 Prevents subtle bugs</span>
-                    </div>
-                </div>
+        <div class="tips-grid">
+          <!-- Tip 1 (fixed) -->
+          <article class="tip-card">
+            <div class="tip-badge python">Python</div>
+            <h3 class="tip-title">dict.get() Doesn’t Cache Your Default</h3>
+            <p class="tip-description">
+              <code>dict.get(key, [])</code> returns a new list each call when the key is missing — the real gotcha is you never store it, so the dict stays empty.
+            </p>
+            <div class="tip-code" data-copy>
+              <pre><code><span class="comment"># ❌ Bad: doesn't persist into the dict</span>
+cache = {}
+lst = cache.get("key", [])
+lst.append("item")
+print(cache)  <span class="comment"># {}</span>
 
-                <!-- Tip Card 2 -->
-                <div class="tip-card">
-                    <div class="tip-badge javascript">JavaScript</div>
-                    <h3 class="tip-title">Optional Chaining Saves Lives</h3>
-                    <p class="tip-description">Stop checking every level. Use ?. to safely access nested properties.</p>
-                    <div class="tip-code">
-                        <pre><code><span class="comment">// ❌ The old way</span>
+<span class="comment"># ✅ Good: persist into the dict</span>
+cache.setdefault("key", []).append("item")
+print(cache)  <span class="comment"># {'key': ['item']}</span></code></pre>
+            </div>
+            <div class="tip-footer">
+              <span class="tip-impact">🎯 Prevents fake “caches”</span>
+            </div>
+          </article>
+
+          <!-- Tip 2 -->
+          <article class="tip-card">
+            <div class="tip-badge javascript">JavaScript</div>
+            <h3 class="tip-title">Optional Chaining Saves Lives</h3>
+            <p class="tip-description">Stop checking every level. Use <code>?.</code> to safely access nested properties.</p>
+            <div class="tip-code" data-copy>
+              <pre><code><span class="comment">// ❌ Old way</span>
 <span class="keyword">const</span> city = user && user.address && user.address.city;
 
-<span class="comment">// ✅ Much cleaner</span>
+<span class="comment">// ✅ Cleaner</span>
 <span class="keyword">const</span> city = user?.address?.city;</code></pre>
-                    </div>
-                    <div class="tip-footer">
-                        <span class="tip-impact">⚡ Cleaner code</span>
-                    </div>
-                </div>
+            </div>
+            <div class="tip-footer">
+              <span class="tip-impact">⚡ Cleaner code</span>
+            </div>
+          </article>
 
-                <!-- Tip Card 3 -->
-                <div class="tip-card">
-                    <div class="tip-badge general">General</div>
-                    <h3 class="tip-title">Git Bisect for Bug Hunting</h3>
-                    <p class="tip-description">Binary search through commits to find exactly when a bug was introduced.</p>
-                    <div class="tip-code">
-                        <pre><code><span class="comment"># Start bisecting</span>
-git bisect start
-git bisect bad          <span class="comment"># Current is broken</span>
-git bisect good abc123  <span class="comment"># This commit worked</span>
+          <!-- Tip 3 -->
+          <article class="tip-card">
+            <div class="tip-badge general">General</div>
+            <h3 class="tip-title">Git Bisect for Bug Hunting</h3>
+            <p class="tip-description">Binary search through commits to find exactly when a bug was introduced.</p>
+            <div class="tip-code" data-copy>
+              <pre><code>git bisect start
+git bisect bad
+git bisect good abc123
 
-<span class="comment"># Git will checkout commits for testing</span>
-<span class="comment"># Mark each as good/bad until found</span></code></pre>
-                    </div>
-                    <div class="tip-footer">
-                        <span class="tip-impact">🐛 Debug faster</span>
-                    </div>
-                </div>
+<span class="comment"># Git checks out commits. Mark good/bad until found.</span></code></pre>
+            </div>
+            <div class="tip-footer">
+              <span class="tip-impact">🐛 Debug faster</span>
+            </div>
+          </article>
 
-                <!-- Tip Card 4 -->
-                <div class="tip-card">
-                    <div class="tip-badge python">Python</div>
-                    <h3 class="tip-title">F-String Debugging</h3>
-                    <p class="tip-description">Python 3.8+ lets you debug with f-strings using the = suffix.</p>
-                    <div class="tip-code">
-                        <pre><code>x = 42
+          <!-- Tip 4 -->
+          <article class="tip-card">
+            <div class="tip-badge python">Python</div>
+            <h3 class="tip-title">F-String Debugging</h3>
+            <p class="tip-description">Python 3.8+ lets you debug with f-strings using the <code>=</code> suffix.</p>
+            <div class="tip-code" data-copy>
+              <pre><code>x = 42
 name = "debug"
 
-<span class="comment"># Instead of this:</span>
-<span class="builtin">print</span>(<span class="string">f"x: {x}, name: {name}"</span>)
-
-<span class="comment"># Do this:</span>
-<span class="builtin">print</span>(<span class="string">f"{x=}, {name=}"</span>)
-<span class="comment"># Outputs: x=42, name='debug'</span></code></pre>
-                    </div>
-                    <div class="tip-footer">
-                        <span class="tip-impact">⏱️ Faster debugging</span>
-                    </div>
-                </div>
-
-                <!-- Tip Card 5 -->
-                <div class="tip-card">
-                    <div class="tip-badge rust">Rust</div>
-                    <h3 class="tip-title">Use .unwrap_or_default()</h3>
-                    <p class="tip-description">Cleaner than unwrap_or() when you just want the type's default value.</p>
-                    <div class="tip-code">
-                        <pre><code><span class="comment">// Instead of:</span>
-<span class="keyword">let</span> value = option.unwrap_or(<span class="number">0</span>);
-<span class="keyword">let</span> text = option.unwrap_or(String::new());
-
-<span class="comment">// Just do:</span>
-<span class="keyword">let</span> value = option.unwrap_or_default();
-<span class="keyword">let</span> text = option.unwrap_or_default();</code></pre>
-                    </div>
-                    <div class="tip-footer">
-                        <span class="tip-impact">📝 Cleaner code</span>
-                    </div>
-                </div>
-
-                <!-- Tip Card 6 -->
-                <div class="tip-card">
-                    <div class="tip-badge sql">SQL</div>
-                    <h3 class="tip-title">EXPLAIN ANALYZE Your Queries</h3>
-                    <p class="tip-description">Don't guess at performance. See exactly what your database is doing.</p>
-                    <div class="tip-code">
-                        <pre><code><span class="comment">-- See the query plan</span>
-<span class="keyword">EXPLAIN ANALYZE</span>
-<span class="keyword">SELECT</span> * <span class="keyword">FROM</span> users
-<span class="keyword">WHERE</span> email <span class="keyword">LIKE</span> <span class="string">'%@gmail.com'</span>;
-
-<span class="comment">-- Look for seq scans on large tables</span>
-<span class="comment">-- Add indexes where it helps</span></code></pre>
-                    </div>
-                    <div class="tip-footer">
-                        <span class="tip-impact">🚀 Performance boost</span>
-                    </div>
-                </div>
+print(f"{x=}, {name=}")
+<span class="comment"># x=42, name='debug'</span></code></pre>
             </div>
+            <div class="tip-footer">
+              <span class="tip-impact">⏱️ Faster debugging</span>
+            </div>
+          </article>
         </div>
+      </div>
     </section>
 
-    <!-- Challenges Section -->
+    <!-- Challenges -->
     <section id="challenges" class="challenges-section">
-        <div class="container">
-            <h2 class="section-title">Coding Challenges</h2>
-            <p class="section-subtitle">Test your skills with real-world scenarios</p>
-            
-            <div class="challenges-grid">
-                <div class="challenge-card">
-                    <div class="challenge-difficulty easy">Beginner</div>
-                    <h3 class="challenge-title">Find the Bug: List Mutation</h3>
-                    <p class="challenge-description">Can you spot why this function doesn't work as expected?</p>
-                    <button class="btn-challenge">Try Challenge →</button>
-                </div>
+      <div class="container">
+        <h2 class="section-title">Coding Challenges</h2>
+        <p class="section-subtitle">Test your skills with real-world scenarios</p>
 
-                <div class="challenge-card">
-                    <div class="challenge-difficulty medium">Intermediate</div>
-                    <h3 class="challenge-title">Optimize This Query</h3>
-                    <p class="challenge-description">Make this slow SQL query 100x faster without changing the logic.</p>
-                    <button class="btn-challenge">Try Challenge →</button>
-                </div>
+        <div class="challenges-grid">
+          <article class="challenge-card">
+            <div class="challenge-difficulty easy">Beginner</div>
+            <h3 class="challenge-title">Find the Bug: List Mutation</h3>
+            <p class="challenge-description">Spot why this function doesn't work as expected.</p>
+            <button class="btn-challenge" type="button">Try Challenge →</button>
+          </article>
 
-                <div class="challenge-card">
-                    <div class="challenge-difficulty hard">Advanced</div>
-                    <h3 class="challenge-title">Race Condition Debugging</h3>
-                    <p class="challenge-description">Find and fix the concurrency bug in this async code.</p>
-                    <button class="btn-challenge">Try Challenge →</button>
-                </div>
-            </div>
+          <article class="challenge-card">
+            <div class="challenge-difficulty medium">Intermediate</div>
+            <h3 class="challenge-title">Optimize This Query</h3>
+            <p class="challenge-description">Make this slow SQL query 100x faster without changing the logic.</p>
+            <button class="btn-challenge" type="button">Try Challenge →</button>
+          </article>
+
+          <article class="challenge-card">
+            <div class="challenge-difficulty hard">Advanced</div>
+            <h3 class="challenge-title">Race Condition Debugging</h3>
+            <p class="challenge-description">Find and fix the concurrency bug in this async code.</p>
+            <button class="btn-challenge" type="button">Try Challenge →</button>
+          </article>
         </div>
+      </div>
     </section>
 
-    <!-- About Section -->
+    <!-- About -->
     <section id="about" class="about-section">
-        <div class="container">
-            <h2 class="section-title">About itcompilesonmymachine</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>We're developers who've been in the trenches. We've shipped code, debugged production fires at 3 AM, and learned the hard way what works and what doesn't.</p>
-                    <p>This site is where we share those lessons—the tips that save hours, prevent bugs, and make you better at your craft. No fluff, no BS, just practical insights you can use today.</p>
-                    <div class="social-links">
-                        <a href="https://facebook.com/itcompilesonmymachine" class="social-btn facebook" target="_blank">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                            </svg>
-                            Follow on Facebook
-                        </a>
-                    </div>
-                </div>
-                <div class="about-stats">
-                    <div class="stat-item">
-                        <div class="stat-number">500+</div>
-                        <div class="stat-label">Coding Tips</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">25</div>
-                        <div class="stat-label">Followers</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">100%</div>
-                        <div class="stat-label">Battle-Tested</div>
-                    </div>
-                </div>
+      <div class="container">
+        <h2 class="section-title">About itcompilesonmymachine</h2>
+        <div class="about-content">
+          <div class="about-text">
+            <p>We’ve shipped code, debugged production fires at 3 AM, and learned the hard way what works and what doesn’t.</p>
+            <p>No fluff. No BS. Just practical lessons you can use today.</p>
+
+            <div class="social-links">
+              <a href="https://facebook.com/itcompilesonmymachine"
+                 class="social-btn facebook"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                Follow on Facebook
+              </a>
             </div>
+          </div>
+
+          <div class="about-stats">
+            <div class="stat-item">
+              <div class="stat-number">100%</div>
+              <div class="stat-label">Battle-Tested</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">0</div>
+              <div class="stat-label">Fluff</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">∞</div>
+              <div class="stat-label">Learning</div>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
+  </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <div class="logo-icon">&lt;/&gt;</div>
-                        <span class="logo-text">itcompilesonmymachine</span>
-                    </div>
-                    <p class="footer-tagline">Real experience, zero BS.</p>
-                </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4>Resources</h4>
-                        <ul>
-                            <li><a href="#tips">Coding Tips</a></li>
-                            <li><a href="#playground">Python Playground</a></li>
-                            <li><a href="#challenges">Challenges</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Connect</h4>
-                        <ul>
-                            <li><a href="https://facebook.com/itcompilesonmymachine" target="_blank">Facebook</a></li>
-                            <li><a href="#about">About</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 itcompilesonmymachine. Built by developers, for developers.</p>
-            </div>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="logo" aria-hidden="true">
+            <div class="logo-icon">&lt;/&gt;</div>
+            <span class="logo-text">itcompilesonmymachine</span>
+          </div>
+          <p class="footer-tagline">Real experience, zero BS.</p>
         </div>
-    </footer>
 
-    <script src="script.js"></script>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Resources</h4>
+            <ul>
+              <li><a href="#tips">Coding Tips</a></li>
+              <li><a href="#playground">Python Playground</a></li>
+              <li><a href="#challenges">Challenges</a></li>
+            </ul>
+          </div>
+          <div class="footer-column">
+            <h4>Connect</h4>
+            <ul>
+              <li><a href="https://facebook.com/itcompilesonmymachine" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+              <li><a href="#about">About</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 itcompilesonmymachine. Built by developers, for developers.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
