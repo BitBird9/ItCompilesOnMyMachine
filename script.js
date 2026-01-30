@@ -1,314 +1,335 @@
-// Code Examples Database
+/* script.js */
+
+/** Strip tracking params (fbclid, utm_*) */
+(function stripTrackingParams() {
+  const url = new URL(window.location.href);
+  const kill = new Set(["fbclid", "gclid"]);
+  let changed = false;
+
+  for (const k of [...url.searchParams.keys()]) {
+    if (kill.has(k) || k.startsWith("utm_")) {
+      url.searchParams.delete(k);
+      changed = true;
+    }
+  }
+  if (changed) history.replaceState({}, "", url);
+})();
+
+/** Smooth scrolling (respects reduced motion) */
+const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener("click", (e) => {
+    const href = a.getAttribute("href");
+    const target = href ? document.querySelector(href) : null;
+    if (!target) return;
+
+    e.preventDefault();
+    target.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "start" });
+
+    // close mobile menu if open
+    navLinks?.classList.remove("open");
+    navToggle?.setAttribute("aria-expanded", "false");
+  });
+});
+
+/** Mobile nav */
+const navToggle = document.querySelector(".nav-toggle");
+const navLinks = document.querySelector(".nav-links");
+
+navToggle?.addEventListener("click", () => {
+  const isOpen = navLinks.classList.toggle("open");
+  navToggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+/** Playground elements */
+const codeEditor = document.getElementById("codeEditor");
+const outputEl = document.getElementById("output");
+const runBtn = document.getElementById("runCode");
+const stopBtn = document.getElementById("stopCode");
+const clearBtn = document.getElementById("clearOutput");
+const copyOutBtn = document.getElementById("copyOutput");
+const pyStatus = document.getElementById("pyStatus");
+const timeoutSelect = document.getElementById("timeoutSelect");
+const capSelect = document.getElementById("capSelect");
+const exampleButtons = document.querySelectorAll(".btn-example");
+
+/** Examples (correct + teaches right lessons) */
 const codeExamples = {
-    dictget: `# Dict.get() with mutable default gotcha
+  dictget: `# dict.get() gotcha: it doesn't store the default
 cache = {}
 
-# This looks fine but creates a shared reference
-result1 = cache.get('key', [])
-result1.append('first')
+a = cache.get("key", [])
+a.append("first")
 
-result2 = cache.get('key', [])  # Same default list!
-result2.append('second')
+b = cache.get("key", [])
+b.append("second")
 
-print("result1:", result1)
-print("result2:", result2)
-print("Are they the same object?", result1 is result2)
-print()
+print("a:", a)                 # ['first']
+print("b:", b)                 # ['second']
+print("same object?", a is b)  # False
+print("cache:", cache)         # {}  <-- nothing cached
 
-# Better approach - use setdefault
-cache2 = {}
-cache2.setdefault('key', []).append('item1')
-cache2.setdefault('key', []).append('item2')
-print("cache2:", cache2)`,
+print("\\nFix: setdefault")
+cache.setdefault("key", []).append("first")
+cache.setdefault("key", []).append("second")
+print("cache:", cache)`,
+  mutabledefault: `# The REAL "shared mutable default" bug is function defaults
+def add_item(x, bucket=[]):  # ❌ shared across calls
+    bucket.append(x)
+    return bucket
 
-    listcomp: `# List comprehension vs map/filter
-# Old way
-numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-squares = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, numbers)))
-print("Old way:", squares)
+print(add_item(1))  # [1]
+print(add_item(2))  # [1, 2]  <-- surprise
 
-# Modern way - much clearer
-squares_modern = [x**2 for x in numbers if x % 2 == 0]
-print("Modern way:", squares_modern)
+print("\\nFix: None default")
+def add_item_safe(x, bucket=None):
+    if bucket is None:
+        bucket = []
+    bucket.append(x)
+    return bucket
 
-# Nested comprehension example
-matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-flattened = [num for row in matrix for num in row]
-print("Flattened:", flattened)`,
+print(add_item_safe(1))  # [1]
+print(add_item_safe(2))  # [2]`,
+  listcomp: `numbers = list(range(1, 11))
+squares = [x*x for x in numbers if x % 2 == 0]
+print(squares)
 
-    walrus: `# Walrus operator (:=) - Python 3.8+
-# Before: repeated computation
-data = [1, 2, 3, 4, 5]
-
-# Without walrus - calling len() twice
-if len(data) > 3:
-    print(f"List is long: {len(data)} items")
-
-# With walrus - compute once, use twice
+matrix = [[1,2,3],[4,5,6],[7,8,9]]
+flat = [n for row in matrix for n in row]
+print(flat)`,
+  walrus: `data = [1,2,3,4,5]
 if (n := len(data)) > 3:
     print(f"List is long: {n} items")
 
-# Useful in while loops
-print("\\nReading lines:")
+print("Reading lines:")
 lines = ["hello", "world", "python", ""]
 i = 0
-while (line := lines[i] if i < len(lines) else "") and line != "":
-    print(f"  {line}")
+while (line := (lines[i] if i < len(lines) else "")) != "":
+    print(" ", line)
     i += 1`,
+  contextmgr: `from contextlib import contextmanager
+import time
 
-    contextmgr: `# Context managers - clean resource handling
-from contextlib import contextmanager
-
-# Custom context manager
 @contextmanager
 def timer(name):
-    import time
     start = time.time()
     print(f"Starting {name}...")
-    yield
-    elapsed = time.time() - start
-    print(f"{name} took {elapsed:.4f} seconds")
+    try:
+      yield
+    finally:
+      print(f"{name} took {time.time() - start:.4f}s")
 
-# Using the context manager
-with timer("Task 1"):
-    total = sum(range(1000000))
-    print(f"  Sum: {total}")
-
-# Another example - temporary state
-@contextmanager
-def temporary_change(obj, attr, value):
-    original = getattr(obj, attr)
-    setattr(obj, attr, value)
-    yield
-    setattr(obj, attr, original)
-
-class Config:
-    debug = False
-
-config = Config()
-print(f"Before: debug={config.debug}")
-with temporary_change(config, 'debug', True):
-    print(f"Inside context: debug={config.debug}")
-print(f"After: debug={config.debug}")`
+with timer("Task"):
+    total = sum(range(1_000_00))
+    print("Sum:", total)`
 };
 
-// Python interpreter simulation (for educational purposes)
-function executePythonCode(code) {
-    const output = [];
-    
-    try {
-        // This is a simplified simulation for educational purposes
-        // In production, you'd use a backend Python interpreter or Pyodide
-        
-        // Detect what the code is trying to demonstrate
-        if (code.includes('cache.get') && code.includes('[]')) {
-            output.push("result1: ['first', 'second']");
-            output.push("result2: ['first', 'second']");
-            output.push("Are they the same object? True");
-            output.push("");
-            output.push("cache2: {'key': ['item1', 'item2']}");
-            output.push("");
-            output.push("✅ Notice how result1 and result2 share the same list!");
-            output.push("   This is the mutable default gotcha.");
-        } else if (code.includes('list comprehension') || code.includes('[x**2 for x')) {
-            output.push("Old way: [4, 16, 36, 64, 100]");
-            output.push("Modern way: [4, 16, 36, 64, 100]");
-            output.push("Flattened: [1, 2, 3, 4, 5, 6, 7, 8, 9]");
-            output.push("");
-            output.push("✅ List comprehensions are more Pythonic and readable!");
-        } else if (code.includes(':=') || code.includes('walrus')) {
-            output.push("List is long: 5 items");
-            output.push("");
-            output.push("Reading lines:");
-            output.push("  hello");
-            output.push("  world");
-            output.push("  python");
-            output.push("");
-            output.push("✅ Walrus operator avoids repeated computation!");
-        } else if (code.includes('@contextmanager') || code.includes('with timer')) {
-            output.push("Starting Task 1...");
-            output.push("  Sum: 499999500000");
-            output.push("Task 1 took 0.0234 seconds");
-            output.push("Before: debug=False");
-            output.push("Inside context: debug=True");
-            output.push("After: debug=False");
-            output.push("");
-            output.push("✅ Context managers ensure clean setup and teardown!");
-        } else {
-            // Generic execution simulation
-            output.push("✅ Code executed successfully!");
-            output.push("");
-            output.push("Note: This is a demo playground.");
-            output.push("For full Python execution, the actual implementation");
-            output.push("would use Pyodide or a backend Python interpreter.");
-        }
-        
-        return { success: true, output: output.join('\n') };
-    } catch (error) {
-        return { 
-            success: false, 
-            output: `❌ Error: ${error.message}\n\nPlease check your code syntax.` 
-        };
-    }
+/** Safe output renderer */
+function setOutput(text) {
+  outputEl.textContent = text;
 }
 
-// DOM Elements
-const codeEditor = document.getElementById('codeEditor');
-const outputDiv = document.getElementById('output');
-const runButton = document.getElementById('runCode');
-const clearButton = document.getElementById('clearOutput');
-const exampleButtons = document.querySelectorAll('.btn-example');
+/** Worker management */
+let worker = null;
+let running = false;
+let runTimeout = null;
 
-// Run code
-runButton.addEventListener('click', () => {
-    const code = codeEditor.value;
-    
-    if (!code.trim()) {
-        outputDiv.innerHTML = '<span class="output-error">⚠️ Please write some code first!</span>';
-        return;
+function setStatus(kind, text) {
+  pyStatus.className = `status-pill ${
+    kind === "ready" ? "status-ready" :
+    kind === "error" ? "status-error" :
+    "status-loading"
+  }`;
+  pyStatus.textContent = text;
+}
+
+function ensureWorker() {
+  if (worker) return worker;
+
+  worker = new Worker("py-worker.js");
+  worker.onmessage = (e) => {
+    const msg = e.data;
+
+    if (msg?.type === "ready") {
+      setStatus("ready", "Python ready");
+      runBtn.disabled = false;
+      return;
     }
-    
-    outputDiv.innerHTML = '<span class="output-placeholder">Running code...</span>';
-    
-    // Simulate execution delay
-    setTimeout(() => {
-        const result = executePythonCode(code);
-        
-        if (result.success) {
-            outputDiv.innerHTML = `<span class="output-success">${result.output}</span>`;
-        } else {
-            outputDiv.innerHTML = `<span class="output-error">${result.output}</span>`;
-        }
-    }, 300);
-});
 
-// Clear output
-clearButton.addEventListener('click', () => {
-    outputDiv.innerHTML = '<span class="output-placeholder">Run your code to see output here...</span>';
-});
-
-// Load examples
-exampleButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const exampleKey = button.getAttribute('data-example');
-        const exampleCode = codeExamples[exampleKey];
-        
-        if (exampleCode) {
-            codeEditor.value = exampleCode;
-            
-            // Clear output and show message
-            outputDiv.innerHTML = '<span class="output-placeholder">Example loaded! Click "Run Code" to execute.</span>';
-            
-            // Highlight button
-            exampleButtons.forEach(btn => btn.style.background = 'var(--bg-card)');
-            button.style.background = 'var(--bg-hover)';
-        }
-    });
-});
-
-// Allow Tab key in textarea
-codeEditor.addEventListener('keydown', (e) => {
-    if (e.key === 'Tab') {
-        e.preventDefault();
-        
-        const start = codeEditor.selectionStart;
-        const end = codeEditor.selectionEnd;
-        const value = codeEditor.value;
-        
-        // Insert 4 spaces
-        codeEditor.value = value.substring(0, start) + '    ' + value.substring(end);
-        
-        // Move cursor
-        codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+    if (msg?.type === "fatal") {
+      setStatus("error", "Python failed to load");
+      setOutput(String(msg.error || "Unknown error"));
+      runBtn.disabled = true;
+      stopBtn.disabled = true;
+      return;
     }
-});
 
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Challenge button placeholders
-document.querySelectorAll('.btn-challenge').forEach(button => {
-    button.addEventListener('click', () => {
-        alert('🚀 Coding challenges coming soon! Follow us on Facebook for updates.');
-    });
-});
-
-// Add keyboard shortcut to run code (Ctrl+Enter or Cmd+Enter)
-codeEditor.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-        e.preventDefault();
-        runButton.click();
+    if (msg?.type === "result") {
+      finishRun();
+      setOutput(msg.output);
+      return;
     }
+  };
+
+  worker.onerror = (err) => {
+    finishRun();
+    setStatus("error", "Worker crashed");
+    setOutput(String(err?.message || err));
+  };
+
+  // init
+  setStatus("loading", "Loading Python…");
+  runBtn.disabled = true;
+  stopBtn.disabled = true;
+  worker.postMessage({ type: "init" });
+
+  return worker;
+}
+
+function killWorker() {
+  if (worker) {
+    worker.terminate();
+    worker = null;
+  }
+}
+
+function startRun() {
+  running = true;
+  stopBtn.disabled = false;
+  runBtn.disabled = true;
+}
+
+function finishRun() {
+  running = false;
+  stopBtn.disabled = true;
+  runBtn.disabled = false;
+  if (runTimeout) {
+    clearTimeout(runTimeout);
+    runTimeout = null;
+  }
+}
+
+function runCode() {
+  const code = codeEditor.value || "";
+  if (!code.trim()) {
+    setOutput("⚠️ Please write some code first.");
+    return;
+  }
+
+  const w = ensureWorker();
+  const timeoutMs = Number(timeoutSelect.value || 3000);
+  const capBytes = Number(capSelect.value || 16000);
+
+  startRun();
+  setOutput("Running…");
+
+  // hard timeout: kill worker and recreate
+  runTimeout = setTimeout(() => {
+    setOutput(`⏱️ Timed out after ${timeoutMs}ms. (Try a longer timeout or optimize the code.)`);
+    setStatus("ready", "Python ready");
+    killWorker();
+    ensureWorker();
+    finishRun();
+  }, timeoutMs);
+
+  w.postMessage({ type: "run", code, capBytes });
+}
+
+/** Stop button kills worker immediately */
+function stopCode() {
+  if (!running) return;
+  setOutput("■ Stopped.");
+  setStatus("ready", "Python ready");
+  killWorker();
+  ensureWorker();
+  finishRun();
+}
+
+/** Hook up UI */
+runBtn.addEventListener("click", runCode);
+stopBtn.addEventListener("click", stopCode);
+
+clearBtn.addEventListener("click", () => setOutput("Run your code to see output here…"));
+
+copyOutBtn.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(outputEl.textContent || "");
+    copyOutBtn.textContent = "Copied!";
+    setTimeout(() => (copyOutBtn.textContent = "Copy"), 1200);
+  } catch {
+    copyOutBtn.textContent = "Failed";
+    setTimeout(() => (copyOutBtn.textContent = "Copy"), 1200);
+  }
 });
 
-// Initialize with first example
-window.addEventListener('load', () => {
-    // Optional: Auto-load first example
-    // exampleButtons[0]?.click();
+/** Tab key indentation + Ctrl/Cmd+Enter */
+codeEditor.addEventListener("keydown", (e) => {
+  if (e.key === "Tab") {
+    e.preventDefault();
+    const start = codeEditor.selectionStart;
+    const end = codeEditor.selectionEnd;
+    const value = codeEditor.value;
+    codeEditor.value = value.slice(0, start) + "    " + value.slice(end);
+    codeEditor.selectionStart = codeEditor.selectionEnd = start + 4;
+  }
+
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+    e.preventDefault();
+    runCode();
+  }
 });
 
-// Add copy code functionality to tip cards
-document.querySelectorAll('.tip-code').forEach(codeBlock => {
-    const copyButton = document.createElement('button');
-    copyButton.className = 'btn-copy-code';
-    copyButton.innerHTML = '📋 Copy';
-    copyButton.style.cssText = `
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        background: var(--bg-hover);
-        color: var(--text-secondary);
-        border: 1px solid var(--code-border);
-        padding: 0.375rem 0.75rem;
-        border-radius: var(--radius-sm);
-        font-size: 0.75rem;
-        cursor: pointer;
-        opacity: 0;
-        transition: all 0.3s ease;
-        font-family: var(--font-main);
-    `;
-    
-    codeBlock.style.position = 'relative';
-    codeBlock.appendChild(copyButton);
-    
-    codeBlock.addEventListener('mouseenter', () => {
-        copyButton.style.opacity = '1';
-    });
-    
-    codeBlock.addEventListener('mouseleave', () => {
-        copyButton.style.opacity = '0';
-    });
-    
-    copyButton.addEventListener('click', async () => {
-        const code = codeBlock.querySelector('code').textContent;
-        try {
-            await navigator.clipboard.writeText(code);
-            copyButton.innerHTML = '✅ Copied!';
-            setTimeout(() => {
-                copyButton.innerHTML = '📋 Copy';
-            }, 2000);
-        } catch (err) {
-            copyButton.innerHTML = '❌ Failed';
-            setTimeout(() => {
-                copyButton.innerHTML = '📋 Copy';
-            }, 2000);
-        }
-    });
+/** Load examples */
+exampleButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const key = btn.getAttribute("data-example");
+    const ex = codeExamples[key];
+    if (!ex) return;
+    codeEditor.value = ex;
+    setOutput("Example loaded. Click Run.");
+  });
 });
 
-// Console welcome message
-console.log('%c🚀 Welcome to itcompilesonmymachine!', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
-console.log('%cBattle-tested coding tips from developers in the trenches.', 'color: #a0a8c0; font-size: 14px;');
-console.log('%cFollow us on Facebook: https://facebook.com/itcompilesonmymachine', 'color: #00ffff; font-size: 12px;');
+/** Challenge placeholders */
+document.querySelectorAll(".btn-challenge").forEach((b) => {
+  b.addEventListener("click", () => alert("🚀 Coding challenges coming soon!"));
+});
+
+/** Tip card copy buttons (always safe) */
+document.querySelectorAll('[data-copy]').forEach((block) => {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "btn-clear";
+  btn.style.position = "absolute";
+  btn.style.top = "0.5rem";
+  btn.style.right = "0.5rem";
+  btn.textContent = "Copy";
+
+  block.style.position = "relative";
+  block.appendChild(btn);
+
+  btn.addEventListener("click", async () => {
+    const code = block.querySelector("code")?.textContent || "";
+    try {
+      await navigator.clipboard.writeText(code);
+      btn.textContent = "Copied!";
+      setTimeout(() => (btn.textContent = "Copy"), 1200);
+    } catch {
+      btn.textContent = "Failed";
+      setTimeout(() => (btn.textContent = "Copy"), 1200);
+    }
+  });
+});
+
+/** Initialize */
+function boot() {
+  // default snippet
+  codeEditor.value = codeExamples.dictget;
+  setOutput("Run your code to see output here…");
+  ensureWorker();
+
+  console.log("%c🚀 Welcome to itcompilesonmymachine!", "color:#00d4ff;font-size:18px;font-weight:800;");
+  console.log("%cReal Python runs in a worker via Pyodide.", "color:#a0a8c0;font-size:12px;");
+}
+
+window.addEventListener("load", boot);
